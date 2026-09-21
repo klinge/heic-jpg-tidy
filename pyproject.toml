@@ -35,7 +35,7 @@ heic-jpg-tidy = "heic_jpg_tidy.cli:main"
 testpaths = ["tests"]
 
 [tool.ruff]
-target-version = "py311"
+target-version = "py312"
 line-length = 88
 src = ["src"]
 
