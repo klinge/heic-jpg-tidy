@@ -91,6 +91,25 @@ def test_missing_source_file_is_skipped(tmp_path: Path) -> None:
     assert not result.quarantine_path.exists()
 
 
+def test_symbolic_link_is_skipped_without_following_target(tmp_path: Path) -> None:
+    source_root = tmp_path / "source"
+    quarantine_root = tmp_path / "quarantine"
+    target_file = create_file(source_root / "2024" / "IMG_1234.JPG")
+    linked_file = source_root / "2024" / "IMG_1234-link.JPG"
+    linked_file.symlink_to(target_file)
+
+    result = quarantine_file(
+        linked_file,
+        source_root,
+        quarantine_root,
+    )
+
+    assert result.status is QuarantineStatus.SKIPPED
+    assert "symbolic link" in result.message
+    assert linked_file.is_symlink()
+    assert target_file.exists()
+
+
 def test_existing_destination_is_not_overwritten(tmp_path: Path) -> None:
     source_root = tmp_path / "source"
     quarantine_root = tmp_path / "quarantine"

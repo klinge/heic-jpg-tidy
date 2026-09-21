@@ -116,9 +116,31 @@ def quarantine_file(
         A QuarantineResult. Expected safety conditions produce SKIPPED.
         Unexpected filesystem, copy, or verification failures produce ERROR.
     """
-    source_file = source_file.resolve()
+    source_file = source_file.absolute()
     source_root = source_root.resolve()
     quarantine_root = quarantine_root.resolve()
+
+    if source_file.is_symlink():
+        try:
+            destination_path = get_quarantine_path(
+                source_file,
+                source_root,
+                quarantine_root,
+            )
+        except ValueError:
+            destination_path = quarantine_root / source_file.name
+
+        return QuarantineResult(
+            status=QuarantineStatus.SKIPPED,
+            source_path=source_file,
+            quarantine_path=destination_path,
+            message=(
+                "Source file is a symbolic link. Symbolic links are not "
+                "quarantined automatically."
+            ),
+        )
+
+    source_file = source_file.resolve()
 
     # The final path is calculated early so every result can include it where
     # possible, including skipped operations.
@@ -159,17 +181,6 @@ def quarantine_file(
             source_path=source_file,
             quarantine_path=destination_path,
             message="Source file does not exist. No action was performed.",
-        )
-
-    if source_file.is_symlink():
-        return QuarantineResult(
-            status=QuarantineStatus.SKIPPED,
-            source_path=source_file,
-            quarantine_path=destination_path,
-            message=(
-                "Source file is a symbolic link. Symbolic links are not "
-                "quarantined automatically."
-            ),
         )
 
     if not source_file.is_file():

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import csv
-import html
 from collections.abc import Iterable
 from datetime import datetime
 from pathlib import Path
@@ -130,9 +129,9 @@ def relative_path_string(path: Path, source_root: Path) -> str:
     A full path is returned as a fallback if the path is outside source_root.
     """
     try:
-        return html.escape(str(path.relative_to(source_root)))
+        return str(path.relative_to(source_root))
     except ValueError:
-        return html.escape(str(path))
+        return str(path)
 
 
 def join_paths(paths: tuple[Path, ...], source_root: Path) -> str:

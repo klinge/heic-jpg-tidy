@@ -93,6 +93,25 @@ def test_evaluation_to_row_uses_relative_paths() -> None:
     assert row["dimensions_match"] == "TRUE"
 
 
+def test_evaluation_to_row_preserves_special_characters_in_paths() -> None:
+    evaluation = EvaluationResult(
+        pair=CandidatePair(
+            heic=ImageInfo(path=Path("photos/2024/A&B.HEIC")),
+            jpg=ImageInfo(path=Path("photos/2024/A&B.JPG")),
+        ),
+        decision=Decision.REVIEW,
+        reason_codes=(ReasonCode.IMAGE_READ_ERROR,),
+    )
+
+    row = evaluation_to_row(
+        evaluation,
+        source_root=Path("photos"),
+    )
+
+    assert row["heic_path"] == "2024/A&B.HEIC"
+    assert row["jpg_path"] == "2024/A&B.JPG"
+
+
 def test_writes_report_with_evaluations_and_ambiguous_groups(
     tmp_path: Path,
 ) -> None:
