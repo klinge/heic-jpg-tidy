@@ -7,7 +7,7 @@ name = "heic-jpg-tidy"
 version = "0.1.0"
 description = "Conservatively identify and quarantine redundant JPG copies of HEIC images."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [
     { name = "Johan Klinge" }

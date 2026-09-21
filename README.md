@@ -17,7 +17,7 @@ anything is moved.
 
 ## Requirements
 
-- Python 3.11 or later
+- Python 3.12 or later
 - [Pillow](https://python-pillow.org) for image reading and EXIF metadata
 - [pillow-heif](https://github.com/bigcat88/pillow_heif) for HEIC/HEIF support
 
