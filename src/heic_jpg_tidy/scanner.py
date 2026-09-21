@@ -57,11 +57,14 @@ def find_file_groups(source: Path) -> list[FileGroup]:
     resolved_source = source.resolve()
     grouped_paths: dict[tuple[Path, str], list[Path]] = defaultdict(list)
 
-    for root, _, filenames in os.walk(resolved_source):
+    for root, _, filenames in os.walk(resolved_source, followlinks=False):
         directory = Path(root)
 
         for filename in filenames:
-            path = directory.joinpath(filename).resolve()
+            path = directory / filename
+
+            if path.is_symlink():
+                continue
 
             if not path.is_relative_to(resolved_source):
                 continue

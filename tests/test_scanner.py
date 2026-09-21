@@ -96,6 +96,19 @@ def test_ignores_groups_without_both_heic_and_jpg(tmp_path: Path) -> None:
     assert groups == []
 
 
+def test_ignores_symbolic_link_images(tmp_path: Path) -> None:
+    target_file = create_file(tmp_path / "real.JPG")
+    linked_file = tmp_path / "IMG_1234.JPG"
+    linked_file.symlink_to(target_file)
+    create_file(tmp_path / "IMG_1234.HEIC")
+
+    groups = find_file_groups(tmp_path)
+
+    assert groups == []
+    assert linked_file.is_symlink()
+    assert target_file.exists()
+
+
 def test_multiple_jpg_files_create_ambiguous_group(tmp_path: Path) -> None:
     create_file(tmp_path / "IMG_1234.HEIC")
     create_file(tmp_path / "IMG_1234.JPG")
