@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from unittest.mock import patch
 
 from heic_jpg_tidy.models import QuarantineStatus
 from heic_jpg_tidy.quarantine import (
@@ -217,3 +218,29 @@ def test_hash_mismatch_returns_error_and_keeps_source(
 
     temporary_files = list(quarantine_root.rglob("*.copying"))
     assert temporary_files == []
+
+
+def test_unlink_failure_after_successful_copy_returns_error(
+    tmp_path: Path,
+) -> None:
+    source_root = tmp_path / "source"
+    quarantine_root = tmp_path / "quarantine"
+
+    source_file = create_file(
+        source_root / "2024" / "IMG_1234.JPG",
+        b"photo data",
+    )
+
+    with patch.object(Path, "unlink", side_effect=OSError("Simulated unlink failure")):
+        result = quarantine_file(
+            source_file,
+            source_root,
+            quarantine_root,
+        )
+
+    assert result.status is QuarantineStatus.ERROR
+    assert "could not be removed" in result.message
+    assert result.source_sha256 is not None
+    assert result.source_sha256 == result.quarantine_sha256
+    assert result.quarantine_path.exists()
+    assert result.quarantine_path.read_bytes() == b"photo data"
