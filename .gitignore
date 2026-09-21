@@ -1,0 +1,39 @@
+# Virtual environments
+.venv/
+venv/
+.python-version
+
+# Python cache and tooling
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Coverage and test output
+.coverage
+coverage.xml
+htmlcov/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Editor settings
+.vscode/
+.idea/
+
+# Test data
+tests/data/
+
+# Local reports and local photo archives
+reports/
+local_test_archive/
+local_test_archive/
+**/*.csv
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,73 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "heic-jpg-tidy"
+version = "0.1.0"
+description = "Conservatively identify and quarantine redundant JPG copies of HEIC images."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+    { name = "Johan Klinge" }
+]
+dependencies = [
+    "Pillow>=12.0",
+    "pillow-heif>=1.7.0",
+]
+
+[project.optional-dependencies]
+hash = [
+    "ImageHash>=4.3",
+]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.16.8",
+    "mypy>=2.3.1",
+]
+
+[project.scripts]
+heic-jpg-tidy = "heic_jpg_tidy.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+src = ["src"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # Pyflakes
+    "I",   # isort/import ordering
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+    "SIM", # flake8-simplify
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = [
+    "S101", # Allow assert in tests, if bandit S is later enabled.
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+[tool.mypy]
+python_version = "3.11"
+mypy_path = "src"
+packages = ["heic_jpg_tidy"]
+warn_unused_configs = true
+warn_unused_ignores = true
+no_implicit_optional = true
+check_untyped_defs = true
+
+exclude = [
+    "^tests/fixtures/",
+    "^tools/",
+]
