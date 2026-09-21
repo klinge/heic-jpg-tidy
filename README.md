@@ -1,5 +1,7 @@
 # heic-jpg-tidy
 
+![Tests](https://github.com/klinge/heic-jpg-tidy/actions/workflows/tests.yml/badge.svg)
+
 Many photo libraries — especially those from iPhones — contain both a HEIC and
 a JPG version of the same photo. The JPG is typically a legacy export or a
 sharing copy and serves no purpose once the HEIC is safely stored. Over time
