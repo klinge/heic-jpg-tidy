@@ -60,7 +60,7 @@ indent-style = "space"
 line-ending = "auto"
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.12"
 mypy_path = "src"
 packages = ["heic_jpg_tidy"]
 warn_unused_configs = true
