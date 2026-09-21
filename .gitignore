@@ -31,7 +31,6 @@ tests/data/
 # Local reports and local photo archives
 reports/
 local_test_archive/
-local_test_archive/
 **/*.csv
 
 # OS files
