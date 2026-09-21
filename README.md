@@ -1,6 +1,7 @@
 # heic-jpg-tidy
 
 ![Tests](https://github.com/klinge/heic-jpg-tidy/actions/workflows/tests.yml/badge.svg)
+[![codecov](https://codecov.io/gh/klinge/heic-jpg-tidy/graph/badge.svg)](https://codecov.io/gh/klinge/heic-jpg-tidy)
 
 Many photo libraries — especially those from iPhones — contain both a HEIC and
 a JPG version of the same photo. The JPG is typically a legacy export or a
@@ -32,7 +33,7 @@ Optional, for perceptual image hash verification:
 ## Installation
 
 ```bash
-git clone https://github.com/your-username/heic-jpg-tidy.git
+git clone https://github.com/klinge/heic-jpg-tidy.git
 cd heic-jpg-tidy
 pip install .
 ```
