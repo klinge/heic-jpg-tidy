@@ -21,17 +21,6 @@ def normalize_camera_value(value: str | None) -> str | None:
     return normalized or None
 
 
-def calculate_datetime_difference_seconds(pair: CandidatePair) -> float | None:
-    """Return the absolute DateTimeOriginal difference in seconds."""
-    heic_datetime = pair.heic.datetime_original
-    jpg_datetime = pair.jpg.datetime_original
-
-    if heic_datetime is None or jpg_datetime is None:
-        return None
-
-    return abs((heic_datetime - jpg_datetime).total_seconds())
-
-
 def compare_camera_metadata(
     pair: CandidatePair,
 ) -> tuple[bool | None, bool | None]:
@@ -93,7 +82,8 @@ def evaluate_pair(
 
     A pair qualifies only when:
     - both files were read successfully;
-    - DateTimeOriginal exists in both files and is within tolerance;
+    - if DateTimeOriginal is present in both files, the difference is within tolerance;
+    - if DateTimeOriginal is missing from one file but present in the other, the pair is flagged for review;
     - Make/Model do not conflict when both values exist;
     - dimensions exist and match exactly;
     - if hash verification is enabled, perceptual hash is within tolerance.
@@ -113,28 +103,39 @@ def evaluate_pair(
             details=tuple(details),
         )
 
-    datetime_difference = calculate_datetime_difference_seconds(pair)
+    heic_datetime = pair.heic.datetime_original
+    jpg_datetime = pair.jpg.datetime_original
+    datetime_difference: float | None = None
 
-    if datetime_difference is None:
+    # 1. Both images have DateTimeOriginal — check the difference is within tolerance.
+    if heic_datetime is not None and jpg_datetime is not None:
+        diff: float = abs((heic_datetime - jpg_datetime).total_seconds())
+        datetime_difference = diff
+
+        if diff > config.datetime_tolerance_seconds:
+            return EvaluationResult(
+                pair=pair,
+                decision=Decision.REVIEW,
+                reason_codes=(ReasonCode.DATETIME_MISMATCH,),
+                details=(
+                    f"DateTimeOriginal differs by {datetime_difference:.3f} seconds; "
+                    f"allowed tolerance is {config.datetime_tolerance_seconds:.3f} seconds.",
+                ),
+                datetime_difference_seconds=datetime_difference,
+            )
+    # 2. Both images miss DateTimeOriginal — allow to pass through to remaining checks.
+    elif heic_datetime is None and jpg_datetime is None:
+        pass
+
+    # 3. One image has DateTimeOriginal, the other doesn't — flag for review.
+    else:
         return EvaluationResult(
             pair=pair,
             decision=Decision.REVIEW,
             reason_codes=(ReasonCode.DATETIME_MISSING,),
-            details=("DateTimeOriginal is missing from at least one file.",),
+            details=("DateTimeOriginal is present in one file but missing in the other.",),
         )
-
-    if datetime_difference > config.datetime_tolerance_seconds:
-        return EvaluationResult(
-            pair=pair,
-            decision=Decision.REVIEW,
-            reason_codes=(ReasonCode.DATETIME_MISMATCH,),
-            details=(
-                f"DateTimeOriginal differs by {datetime_difference:.3f} seconds; "
-                f"allowed tolerance is {config.datetime_tolerance_seconds:.3f} seconds.",
-            ),
-            datetime_difference_seconds=datetime_difference,
-        )
-
+    
     make_match, model_match = compare_camera_metadata(pair)
 
     if make_match is False:

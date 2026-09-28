@@ -81,9 +81,29 @@ def test_datetime_outside_tolerance_requires_review() -> None:
     assert result.reason_codes == (ReasonCode.DATETIME_MISMATCH,)
 
 
-def test_missing_datetime_requires_review() -> None:
+def test_both_datetimes_missing_is_move_candidate() -> None:
+    result = evaluate_pair(
+        make_pair(heic_datetime=None, jpg_datetime=None),
+        RuleConfig(),
+    )
+
+    assert result.decision is Decision.MOVE_CANDIDATE
+    assert result.datetime_difference_seconds is None
+
+
+def test_jpg_datetime_missing_requires_review() -> None:
     result = evaluate_pair(
         make_pair(jpg_datetime=None),
+        RuleConfig(),
+    )
+
+    assert result.decision is Decision.REVIEW
+    assert result.reason_codes == (ReasonCode.DATETIME_MISSING,)
+
+
+def test_heic_datetime_missing_requires_review() -> None:
+    result = evaluate_pair(
+        make_pair(heic_datetime=None),
         RuleConfig(),
     )
 
