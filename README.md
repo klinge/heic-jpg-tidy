@@ -32,9 +32,13 @@ Optional, for perceptual image hash verification:
 
 ## Installation
 
+Using a virtual environment is recommended:
+
 ```bash
 git clone https://github.com/klinge/heic-jpg-tidy.git
 cd heic-jpg-tidy
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install .
 ```
 
@@ -42,14 +46,6 @@ To include the optional image hash dependency:
 
 ```bash
 pip install ".[hash]"
-```
-
-Using a virtual environment is recommended:
-
-```bash
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-pip install .
 ```
 
 ---
