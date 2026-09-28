@@ -116,8 +116,8 @@ A JPG is only marked as a `MOVE_CANDIDATE` when all of the following conditions
 are satisfied:
 
 1. Both files can be read without errors.
-2. `DateTimeOriginal` is present in both files and the difference is within
-   `--datetime-tolerance-seconds`.
+2. If `DateTimeOriginal` is present in both files the difference must be within
+   `--datetime-tolerance-seconds`. If its in one file but not the other the pair is flagged for review. 
 3. Camera `Make` and `Model` metadata do not conflict (missing values are
    allowed, conflicting values are not).
 4. Image dimensions match exactly after applying EXIF orientation.
