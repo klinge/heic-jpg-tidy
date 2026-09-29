@@ -8,6 +8,7 @@ from heic_jpg_tidy.scanner import (
     is_heic_file,
     is_jpg_file,
     is_supported_image,
+    normalize_stem,
 )
 
 
@@ -64,6 +65,23 @@ def test_filename_matching_is_case_insensitive(tmp_path: Path) -> None:
 
     assert len(groups) == 1
     assert groups[0].stem == "img_1234"
+    assert groups[0].is_unambiguous_pair is True
+
+
+def test_normalize_stem_handles_common_export_prefixes() -> None:
+    assert normalize_stem("IMG_1234") == "img_1234"
+    assert normalize_stem("20201211---IMG_2854") == "img_2854"
+    assert normalize_stem("20201211-Apple--IMG_2854") == "img_2854"
+
+
+def test_finds_pairs_with_date_and_vendor_prefix_noise(tmp_path: Path) -> None:
+    create_file(tmp_path / "20201211---IMG_2854.heic")
+    create_file(tmp_path / "20201211-Apple--IMG_2854.jpg")
+
+    groups = find_file_groups(tmp_path)
+
+    assert len(groups) == 1
+    assert groups[0].stem == "img_2854"
     assert groups[0].is_unambiguous_pair is True
 
 

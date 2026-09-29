@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import os
+import re
 from collections import defaultdict
 from collections.abc import Iterable
 from pathlib import Path
@@ -17,13 +18,35 @@ SUPPORTED_EXTENSIONS = HEIC_EXTENSIONS | JPG_EXTENSIONS
 
 def normalize_stem(stem: str) -> str:
     """
-    Normalize a filename stem for case-insensitive matching.
+    Normalize a filename stem for matching while tolerating common export naming.
+
+    This is intentionally conservative: it handles simple date prefixes and
+    common vendor/export noise, but does not try to match unrelated image
+    names with different underlying identifiers.
 
     Examples:
         IMG_1234 -> img_1234
-        img_1234 -> img_1234
+        20201211---IMG_2854 -> img_2854
+        20201211-Apple--IMG_2854 -> img_2854
     """
-    return stem.casefold()
+    normalized = stem.casefold()
+
+    # Strip common date prefixes used by exported camera/library names.
+    normalized = re.sub(
+        r"^(?:\d{8}|(?:\d{4}[-_. ]?){3,})[-_. ]*",
+        "",
+        normalized,
+    )
+
+    # Remove known vendor/export noise fragments that often appear in file names.
+    normalized = re.sub(
+        r"(?i)(?:^|[^a-z0-9])(?:apple|iphone|ipad|copy|share|export|image|photo|pic)(?:[^a-z0-9]|$)",
+        " ",
+        normalized,
+    )
+
+    normalized = re.sub(r"[^a-z0-9]+", "_", normalized).strip("_")
+    return normalized or stem.casefold()
 
 
 def is_supported_image(path: Path) -> bool:

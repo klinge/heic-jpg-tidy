@@ -8,8 +8,8 @@ photographs or personal metadata.
 from __future__ import annotations
 
 import shutil
-from contextlib import contextmanager
 from collections.abc import Generator
+from contextlib import contextmanager
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -182,8 +182,16 @@ def write_datetime_mismatch_pair(output_dir: Path) -> None:
     jpg_time = heic_time + timedelta(seconds=10)
 
     with create_pattern_image() as image:
-        save_heic(image, output_dir / "IMG_0003.HEIC", exif=create_exif(datetime_original=heic_time))
-        save_jpg(image, output_dir / "IMG_0003.JPG", exif=create_exif(datetime_original=jpg_time))
+        save_heic(
+            image,
+            output_dir / "IMG_0003.HEIC",
+            exif=create_exif(datetime_original=heic_time),
+        )
+        save_jpg(
+            image,
+            output_dir / "IMG_0003.JPG",
+            exif=create_exif(datetime_original=jpg_time),
+        )
 
 
 def write_missing_datetime_pair(output_dir: Path) -> None:
@@ -204,8 +212,16 @@ def write_camera_model_mismatch_pair(output_dir: Path) -> None:
     timestamp = datetime(2025, 1, 15, 12, 34, 0)
 
     with create_pattern_image() as image:
-        save_heic(image, output_dir / "IMG_0005.HEIC", exif=create_exif(datetime_original=timestamp, model="FixtureCam 1"))
-        save_jpg(image, output_dir / "IMG_0005.JPG", exif=create_exif(datetime_original=timestamp, model="FixtureCam 2"))
+        save_heic(
+            image,
+            output_dir / "IMG_0005.HEIC",
+            exif=create_exif(datetime_original=timestamp, model="FixtureCam 1"),
+        )
+        save_jpg(
+            image,
+            output_dir / "IMG_0005.JPG",
+            exif=create_exif(datetime_original=timestamp, model="FixtureCam 2"),
+        )
 
 
 def write_ambiguous_group(output_dir: Path) -> None:

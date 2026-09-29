@@ -7,6 +7,7 @@ import os
 import shutil
 import uuid
 from collections.abc import Callable
+from contextlib import suppress
 from pathlib import Path
 
 from .models import QuarantineResult, QuarantineStatus
@@ -263,10 +264,8 @@ def quarantine_file(
         # source failed, retain both copies. This is safer than deleting a
         # verified quarantine copy during error handling.
         if temporary_path is not None and temporary_path.exists():
-            try:
+            with suppress(OSError):
                 temporary_path.unlink()
-            except OSError:
-                pass
 
         if destination_created:
             message = (

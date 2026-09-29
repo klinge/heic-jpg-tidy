@@ -5,18 +5,18 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 from pathlib import Path
 
 
-class Decision(str, Enum):
+class Decision(StrEnum):
     """Possible outcomes when evaluating a HEIC/JPG pair."""
 
     MOVE_CANDIDATE = "MOVE_CANDIDATE"
     REVIEW = "REVIEW"
 
 
-class ReasonCode(str, Enum):
+class ReasonCode(StrEnum):
     """Machine-readable reasons for an evaluation result."""
 
     MULTIPLE_MATCHING_FILES = "MULTIPLE_MATCHING_FILES"
@@ -106,7 +106,7 @@ class EvaluationResult:
     image_hash_distance: int | None = None
 
 
-class QuarantineStatus(str, Enum):
+class QuarantineStatus(StrEnum):
     """Possible outcomes of a quarantine operation."""
 
     MOVED = "MOVED"
