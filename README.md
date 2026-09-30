@@ -108,7 +108,8 @@ quarantine directory.
 
 A HEIC and a JPG are considered a pair only when they are located in the same
 directory and share the same base filename (case-insensitive), for example
-`IMG_1234.HEIC` and `IMG_1234.JPG`.
+`IMG_1234.HEIC` and `IMG_1234.JPG`. In creating base filenames the original filenames
+are normalized to remove possible export clutter. 
 
 A JPG is only marked as a `MOVE_CANDIDATE` when all of the following conditions
 are satisfied:
