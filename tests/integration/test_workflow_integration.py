@@ -93,7 +93,6 @@ def test_cli_apply_moves_only_confirmed_jpg(tmp_path: Path) -> None:
             "--report-dir",
             str(report_dir),
             "--apply",
-            "--confirm",
         ]
     )
 

@@ -48,7 +48,7 @@ def build_parser() -> argparse.ArgumentParser:
         required=True,
         help=(
             "Separate root directory where confirmed JPG candidates are moved "
-            "when --apply --confirm is used."
+            "when --apply is used."
         ),
     )
 
@@ -88,15 +88,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--apply",
         action="store_true",
-        help=(
-            "Actually move confirmed JPG candidates to quarantine. Requires --confirm."
-        ),
-    )
-
-    parser.add_argument(
-        "--confirm",
-        action="store_true",
-        help=("Confirm that --apply should perform real quarantine operations."),
+        help="Actually move confirmed JPG candidates to quarantine.",
     )
 
     return parser
@@ -144,12 +136,6 @@ def validate_arguments(args: argparse.Namespace) -> str | None:
     if args.max_hash_distance < 0:
         return "--max-hash-distance must be zero or greater."
 
-    if args.apply and not args.confirm:
-        return (
-            "--apply requires --confirm. "
-            "Without both flags the command is always dry-run."
-        )
-
     source_root = args.source.resolve()
     quarantine_root = args.quarantine.resolve()
 
@@ -185,7 +171,7 @@ def print_summary(
     if not apply_mode:
         print()
         print("Dry-run mode: no files were moved.")
-        print("Use --apply --confirm to quarantine confirmed MOVE_CANDIDATE JPG files.")
+        print("Use --apply to quarantine confirmed MOVE_CANDIDATE JPG files.")
 
 
 def run_scan(args: argparse.Namespace) -> int:

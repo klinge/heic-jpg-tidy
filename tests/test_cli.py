@@ -143,15 +143,62 @@ def test_scan_runs_as_dry_run_by_default(
     assert len(written_reports) == 1
 
 
-def test_apply_requires_confirm(
+def test_apply_runs_without_confirm(
     tmp_path: Path,
-    capsys,
+    monkeypatch,
 ) -> None:
     source_root = tmp_path / "source"
     quarantine_root = tmp_path / "quarantine"
+    report_dir = tmp_path / "reports"
 
     source_root.mkdir()
     quarantine_root.mkdir()
+
+    candidate = make_move_candidate(source_root)
+
+    monkeypatch.setattr(cli, "find_file_groups", lambda path: [])
+    monkeypatch.setattr(
+        cli,
+        "evaluate_groups",
+        lambda groups, config, hash_calculator=None: WorkflowResult(
+            evaluations=(candidate,),
+            ambiguous_groups=(),
+        ),
+    )
+
+    def fake_write_evaluation_report(
+        result: WorkflowResult,
+        source_root: Path,
+        output_path: Path,
+    ) -> int:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.touch()
+        return 1
+
+    monkeypatch.setattr(
+        cli,
+        "write_evaluation_report",
+        fake_write_evaluation_report,
+    )
+
+    quarantined_files: list[Path] = []
+
+    def fake_quarantine_file(
+        source_file: Path,
+        source_root: Path,
+        quarantine_root: Path,
+    ) -> QuarantineResult:
+        quarantined_files.append(source_file)
+        return QuarantineResult(
+            status=QuarantineStatus.MOVED,
+            source_path=source_file,
+            quarantine_path=quarantine_root / source_file.name,
+            message="Test move completed.",
+            source_sha256="test-hash",
+            quarantine_sha256="test-hash",
+        )
+
+    monkeypatch.setattr(cli, "quarantine_file", fake_quarantine_file)
 
     exit_code = cli.main(
         [
@@ -160,15 +207,13 @@ def test_apply_requires_confirm(
             "--quarantine",
             str(quarantine_root),
             "--report-dir",
-            str(tmp_path / "reports"),
+            str(report_dir),
             "--apply",
         ]
     )
 
-    captured = capsys.readouterr()
-
-    assert exit_code == 2
-    assert "--apply requires --confirm" in captured.err
+    assert exit_code == 0
+    assert quarantined_files == [candidate.pair.jpg.path]
 
 
 def test_apply_quarantines_only_move_candidates(
@@ -275,7 +320,6 @@ def test_apply_quarantines_only_move_candidates(
             "--report-dir",
             str(report_dir),
             "--apply",
-            "--confirm",
         ]
     )
 

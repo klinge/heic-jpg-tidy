@@ -71,19 +71,18 @@ evaluation report to `--report-dir`. Nothing is moved.
 ### Apply mode
 
 Once you have reviewed the evaluation report and are satisfied with the
-results, run with `--apply --confirm` to move confirmed candidates to
-quarantine:
+results, run with `--apply` to move confirmed candidates to quarantine:
 
 ```bash
 heic-jpg-tidy \
   --source /path/to/photo/archive \
   --quarantine /path/to/quarantine \
   --report-dir /path/to/reports \
-  --apply --confirm
+  --apply
 ```
 
-Both `--apply` and `--confirm` are required to perform real operations. This
-double flag requirement is intentional to prevent accidental execution.
+The command is dry-run by default. Adding `--apply` explicitly enables moving
+confirmed candidates to quarantine.
 
 The quarantine directory must be completely separate from the source directory.
 The relative directory structure of the source archive is preserved inside the
@@ -101,8 +100,7 @@ quarantine directory.
 | `--datetime-tolerance-seconds` | `5.0` | Maximum allowed difference in `DateTimeOriginal` between the HEIC and JPG, in seconds. |
 | `--verify-image-hash` | off | Enable perceptual hash verification for pairs that pass all metadata checks. Requires the `hash` optional dependency. |
 | `--max-hash-distance` | `4` | Maximum allowed perceptual hash distance when `--verify-image-hash` is enabled. |
-| `--apply` | off | Move confirmed candidates to quarantine. Requires `--confirm`. |
-| `--confirm` | off | Confirms that `--apply` should perform real operations. |
+| `--apply` | off | Move confirmed candidates to quarantine. |
 
 ---
 
@@ -140,7 +138,7 @@ Each run writes a timestamped CSV evaluation report to `--report-dir`:
 evaluation_20260115_123000.csv
 ```
 
-When `--apply --confirm` is used, a second CSV action log is written:
+When `--apply` is used, a second CSV action log is written:
 
 ```
 quarantine_actions_20260115_123000.csv
@@ -208,8 +206,7 @@ models.py       Shared data models. Frozen dataclasses and enums only, no logic.
 
 ### Key design decisions
 
-- **Dry-run by default.** Files are never moved unless both `--apply` and
-  `--confirm` are provided.
+- **Dry-run by default.** Files are never moved unless `--apply` is provided.
 - **Conservative evaluation.** Any uncertainty results in `REVIEW`, never
   `MOVE_CANDIDATE`.
 - **No deletions.** The tool moves files to quarantine. Permanent deletion is
