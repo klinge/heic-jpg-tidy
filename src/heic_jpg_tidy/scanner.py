@@ -41,7 +41,7 @@ def normalize_stem(stem: str) -> str:
 
     # Remove known vendor/export noise fragments that often appear in file names.
     normalized = re.sub(
-        r"(?i)(?:^|[^a-z0-9])(?:apple|iphone|ipad|copy|share|export|image|photo|pic)(?:[^a-z0-9]|$)",
+        r"(?i)(?:^|[^a-z0-9])(?:apple|iphone|ipad|copy|share|export)(?:[^a-z0-9]|$)",
         " ",
         normalized,
     )
