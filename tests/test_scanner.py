@@ -74,6 +74,32 @@ def test_normalize_stem_handles_common_export_prefixes() -> None:
     assert normalize_stem("20201211-Apple--IMG_2854") == "img_2854"
 
 
+@pytest.mark.parametrize(
+    "stem",
+    [
+        "img@#$2632",
+        "_img 2632",
+        "img--2632-",
+        "img...2632",
+        "img___2632",
+        "IMG 2632",
+    ],
+)
+def test_normalize_stem_collapses_separator_variants(stem: str) -> None:
+    assert normalize_stem(stem) == "img_2632"
+
+
+def test_normalize_stem_removes_terminal_three_digit_export_suffix() -> None:
+    assert normalize_stem("20200807-Apple--IMG_2632-001") == "img_2632"
+    assert normalize_stem("IMG_2632-002") == "img_2632"
+
+
+def test_normalize_stem_preserves_non_matching_terminal_suffixes() -> None:
+    assert normalize_stem("IMG_2632-01") == "img_2632_01"
+    assert normalize_stem("IMG_2632-0001") == "img_2632_0001"
+    assert normalize_stem("IMG_2632-001-extra") == "img_2632_001_extra"
+
+
 def test_finds_pairs_with_date_and_vendor_prefix_noise(tmp_path: Path) -> None:
     create_file(tmp_path / "20201211---IMG_2854.heic")
     create_file(tmp_path / "20201211-Apple--IMG_2854.jpg")
@@ -82,6 +108,17 @@ def test_finds_pairs_with_date_and_vendor_prefix_noise(tmp_path: Path) -> None:
 
     assert len(groups) == 1
     assert groups[0].stem == "img_2854"
+    assert groups[0].is_unambiguous_pair is True
+
+
+def test_finds_pairs_with_terminal_three_digit_export_suffix(tmp_path: Path) -> None:
+    create_file(tmp_path / "20200807---IMG_2632.heic")
+    create_file(tmp_path / "20200807-Apple--IMG_2632-001.jpg")
+
+    groups = find_file_groups(tmp_path)
+
+    assert len(groups) == 1
+    assert groups[0].stem == "img_2632"
     assert groups[0].is_unambiguous_pair is True
 
 

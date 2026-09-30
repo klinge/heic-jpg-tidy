@@ -28,6 +28,7 @@ def normalize_stem(stem: str) -> str:
         IMG_1234 -> img_1234
         20201211---IMG_2854 -> img_2854
         20201211-Apple--IMG_2854 -> img_2854
+        20201211-IMG_2854-001 -> img_2854
     """
     normalized = stem.casefold()
 
@@ -44,7 +45,10 @@ def normalize_stem(stem: str) -> str:
         " ",
         normalized,
     )
+    # Remove terminal three-digit export suffixes like "-001" or "-002".
+    normalized = re.sub(r"-\d{3}$", "", normalized)
 
+    # Collapse any remaining non-alphanumeric characters into a single underscore.
     normalized = re.sub(r"[^a-z0-9]+", "_", normalized).strip("_")
     return normalized or stem.casefold()
 
