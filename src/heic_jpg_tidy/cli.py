@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import sys
 from datetime import datetime
+from importlib.metadata import version
 from pathlib import Path
 
 from .image_hash import calculate_phash_distance
@@ -26,6 +27,12 @@ def build_parser() -> argparse.ArgumentParser:
             "Conservatively identify redundant JPG copies of HEIC/HEIF images "
             "and optionally move confirmed JPG candidates to quarantine."
         ),
+    )
+    parser.add_argument(
+        "-v",
+        "--version",
+        action="version",
+        version=f"%(prog)s {version('heic-jpg-tidy')}",
     )
 
     subparsers = parser.add_subparsers(

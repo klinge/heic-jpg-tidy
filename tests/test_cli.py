@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 from datetime import datetime
+from importlib.metadata import version
 from pathlib import Path
+
+import pytest
 
 from heic_jpg_tidy import cli
 from heic_jpg_tidy.models import (
@@ -16,6 +19,18 @@ from heic_jpg_tidy.models import (
     ReasonCode,
     WorkflowResult,
 )
+
+
+@pytest.mark.parametrize("option", ["-v", "--version"])
+def test_version_option_prints_package_version(option: str, capsys) -> None:
+    with pytest.raises(SystemExit) as error:
+        cli.main([option])
+
+    captured = capsys.readouterr()
+
+    assert error.value.code == 0
+    assert captured.out.strip() == f"heic-jpg-tidy {version('heic-jpg-tidy')}"
+    assert captured.err == ""
 
 
 def make_move_candidate(source_root: Path) -> EvaluationResult:
