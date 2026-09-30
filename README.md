@@ -52,14 +52,14 @@ pip install ".[hash]"
 
 ## Usage
 
-heic-jpg-tidy uses a single `scan` command.
+heic-jpg-tidy runs a scan directly; no subcommand is required.
 
 ### Dry run (default)
 
 Always start with a dry run. No files are moved.
 
 ```bash
-heic-jpg-tidy scan \
+heic-jpg-tidy \
   --source /path/to/photo/archive \
   --quarantine /path/to/quarantine \
   --report-dir /path/to/reports
@@ -75,7 +75,7 @@ results, run with `--apply --confirm` to move confirmed candidates to
 quarantine:
 
 ```bash
-heic-jpg-tidy scan \
+heic-jpg-tidy \
   --source /path/to/photo/archive \
   --quarantine /path/to/quarantine \
   --report-dir /path/to/reports \

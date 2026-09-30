@@ -62,7 +62,6 @@ def test_cli_dry_run_writes_evaluation_report(tmp_path: Path) -> None:
 
     exit_code = cli.main(
         [
-            "scan",
             "--source",
             str(archive_root),
             "--quarantine",
@@ -87,7 +86,6 @@ def test_cli_apply_moves_only_confirmed_jpg(tmp_path: Path) -> None:
 
     exit_code = cli.main(
         [
-            "scan",
             "--source",
             str(archive_root),
             "--quarantine",

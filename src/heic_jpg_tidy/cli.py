@@ -35,29 +35,14 @@ def build_parser() -> argparse.ArgumentParser:
         version=f"%(prog)s {version('heic-jpg-tidy')}",
     )
 
-    subparsers = parser.add_subparsers(
-        dest="command",
-        required=True,
-    )
-
-    scan_parser = subparsers.add_parser(
-        "scan",
-        help="Scan a photo archive and write an evaluation report.",
-        description=(
-            "Scan a source directory recursively for HEIC/JPG filename pairs. "
-            "The default behavior is dry-run: files are never moved unless "
-            "both --apply and --confirm are provided."
-        ),
-    )
-
-    scan_parser.add_argument(
+    parser.add_argument(
         "--source",
         type=Path,
         required=True,
         help="Root directory containing the photo archive to scan.",
     )
 
-    scan_parser.add_argument(
+    parser.add_argument(
         "--quarantine",
         type=Path,
         required=True,
@@ -67,21 +52,21 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
 
-    scan_parser.add_argument(
+    parser.add_argument(
         "--report-dir",
         type=Path,
         required=True,
         help="Directory where CSV evaluation reports and action logs are written.",
     )
 
-    scan_parser.add_argument(
+    parser.add_argument(
         "--datetime-tolerance-seconds",
         type=float,
         default=5.0,
         help=("Maximum allowed DateTimeOriginal difference in seconds. Default: 5.0."),
     )
 
-    scan_parser.add_argument(
+    parser.add_argument(
         "--verify-image-hash",
         action="store_true",
         help=(
@@ -90,7 +75,7 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
 
-    scan_parser.add_argument(
+    parser.add_argument(
         "--max-hash-distance",
         type=int,
         default=4,
@@ -100,7 +85,7 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
 
-    scan_parser.add_argument(
+    parser.add_argument(
         "--apply",
         action="store_true",
         help=(
@@ -108,7 +93,7 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
 
-    scan_parser.add_argument(
+    parser.add_argument(
         "--confirm",
         action="store_true",
         help=("Confirm that --apply should perform real quarantine operations."),
@@ -345,12 +330,7 @@ def main(argv: list[str] | None = None) -> int:
     """
     parser = build_parser()
     args = parser.parse_args(argv)
-
-    if args.command == "scan":
-        return run_scan(args)
-
-    parser.error(f"Unsupported command: {args.command}")
-    return 2
+    return run_scan(args)
 
 
 if __name__ == "__main__":

@@ -130,7 +130,6 @@ def test_scan_runs_as_dry_run_by_default(
 
     exit_code = cli.main(
         [
-            "scan",
             "--source",
             str(source_root),
             "--quarantine",
@@ -156,7 +155,6 @@ def test_apply_requires_confirm(
 
     exit_code = cli.main(
         [
-            "scan",
             "--source",
             str(source_root),
             "--quarantine",
@@ -270,7 +268,6 @@ def test_apply_quarantines_only_move_candidates(
 
     exit_code = cli.main(
         [
-            "scan",
             "--source",
             str(source_root),
             "--quarantine",
@@ -296,7 +293,6 @@ def test_rejects_overlapping_source_and_quarantine_roots(
 
     exit_code = cli.main(
         [
-            "scan",
             "--source",
             str(source_root),
             "--quarantine",
